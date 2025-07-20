@@ -28,4 +28,5 @@ Para poder correr este proyecto, necesitas tener instalado lo siguiente:
 Todas las librerías de Python necesarias están listadas en el archivo `requirements.txt`. Para instalarlas, abre tu terminal y ejecuta el siguiente comando:
 
 ````bash
+pip install -r requirements.txt
 
