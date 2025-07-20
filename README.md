@@ -10,6 +10,11 @@ Este es un automatizador de escritorio diseñado para simplificar el proceso de 
 * **Automatización Web:** Utiliza `Selenium` para navegar y extraer datos del sitio web del RUES.
 * **Procesamiento de Datos:** Lee y escribe archivos de Excel con la librería `pandas`.
 
+## 🧪 Ejemplo de Funcionamiento
+| Antes de la ejecución | Después de la ejecución |
+|-----------------------|--------------------------|
+| ![Antes](assets/ScreenshotBefore.png) | ![Después](assets/ScreenshotAfter.png) |
+
 ## ⚙️ Requisitos
 
 Para poder correr este proyecto, necesitas tener instalado lo siguiente:
