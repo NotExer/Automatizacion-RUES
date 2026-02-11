@@ -167,68 +167,6 @@ export default function Page() {
           </p>
         </header>
 
-        {/* ── Info Section ── */}
-        <section className="glass p-8 space-y-6">
-          <h2 className="text-lg font-semibold text-blue-300 flex items-center gap-2">
-            <span className="text-xl">📋</span> ¿Qué hace esta aplicación?
-          </h2>
-          <p className="text-slate-300 text-sm leading-relaxed">
-            Esta herramienta permite automatizar la consulta de información empresarial en el
-            <strong className="text-blue-300"> RUES (Registro Único Empresarial y Social)</strong> de Colombia.
-            Solo necesitas subir un archivo Excel con los NITs de las empresas que deseas consultar y la
-            aplicación se encargará de buscar automáticamente cada NIT, recopilando datos como el nombre
-            de la empresa, estado de la matrícula, cámara de comercio, actividad económica y más.
-          </p>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="feature-card">
-              <div className="text-2xl mb-2">📤</div>
-              <h3 className="text-sm font-semibold text-blue-200 mb-1">1. Sube tu archivo</h3>
-              <p className="text-xs text-slate-400">
-                Carga un archivo Excel (.xlsx) con los NITs en la primera columna. Sin encabezados, solo los números.
-              </p>
-            </div>
-            <div className="feature-card">
-              <div className="text-2xl mb-2">🔍</div>
-              <h3 className="text-sm font-semibold text-blue-200 mb-1">2. Consulta automática</h3>
-              <p className="text-xs text-slate-400">
-                La aplicación consulta el RUES para cada NIT de forma concurrente y muestra el progreso en tiempo real.
-              </p>
-            </div>
-            <div className="feature-card">
-              <div className="text-2xl mb-2">📊</div>
-              <h3 className="text-sm font-semibold text-blue-200 mb-1">3. Descarga resultados</h3>
-              <p className="text-xs text-slate-400">
-                Visualiza los resultados en una tabla y descárgalos en un nuevo archivo Excel listo para usar.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* ── Ejemplo de archivo ── */}
-        <section className="glass p-8 space-y-4">
-          <h2 className="text-lg font-semibold text-blue-300 flex items-center gap-2">
-            <span className="text-xl">🖼️</span> Formato del archivo de entrada
-          </h2>
-          <p className="text-slate-400 text-sm">
-            Tu archivo Excel debe verse así: una sola columna con los NITs de las empresas (sin encabezados, sin puntos, sin guiones).
-          </p>
-          {/* ──────────────────────────────────────────────────────────
-              ESPACIO PARA IMAGEN DE EJEMPLO
-              Coloca tu imagen en /public/ejemplo-archivo.png y descomenta la línea <img>
-              ────────────────────────────────────────────────────────── */}
-          <div className="image-placeholder">
-            {/* <img src="/ejemplo-archivo.png" alt="Ejemplo de archivo Excel" className="rounded-xl max-h-64 object-contain" /> */}
-            <div className="text-center space-y-2 p-6">
-              <div className="text-4xl opacity-40">🖼️</div>
-              <p className="text-slate-500 text-sm">Coloca aquí tu imagen de ejemplo</p>
-              <p className="text-slate-600 text-xs">
-                Guarda la imagen en <code className="text-blue-400/70 bg-blue-400/5 px-1.5 py-0.5 rounded">public/ejemplo-archivo.png</code> y descomenta la etiqueta img en el código
-              </p>
-            </div>
-          </div>
-        </section>
-
         {/* ── Upload / Drop Zone ── */}
         <section className="glass p-8 space-y-6">
           <h2 className="text-lg font-semibold text-blue-300 flex items-center gap-2">
@@ -315,6 +253,57 @@ export default function Page() {
               </div>
             </div>
           )}
+        </section>
+
+        {/* ── Ejemplo de archivo ── */}
+        <section className="glass p-8 space-y-4">
+          <h2 className="text-lg font-semibold text-blue-300 flex items-center gap-2">
+            <span className="text-xl">🖼️</span> Formato del archivo de entrada
+          </h2>
+          <p className="text-slate-400 text-sm">
+            Tu archivo Excel debe verse así: una sola columna con los NITs de las empresas (sin encabezados, sin puntos, sin guiones).
+          </p>
+          <div className="image-placeholder p-4">
+            <img src="/Ejemplo.png" alt="Ejemplo de archivo Excel" className="rounded-xl max-h-80 object-contain" />
+          </div>
+        </section>
+
+        {/* ── Info Section ── */}
+        <section className="glass p-8 space-y-6">
+          <h2 className="text-lg font-semibold text-blue-300 flex items-center gap-2">
+            <span className="text-xl">📋</span> ¿Qué hace esta aplicación?
+          </h2>
+          <p className="text-slate-300 text-sm leading-relaxed">
+            Esta herramienta permite automatizar la consulta de información empresarial en el
+            <strong className="text-blue-300"> RUES (Registro Único Empresarial y Social)</strong> de Colombia.
+            Solo necesitas subir un archivo Excel con los NITs de las empresas que deseas consultar y la
+            aplicación se encargará de buscar automáticamente cada NIT, recopilando datos como el nombre
+            de la empresa, estado de la matrícula, cámara de comercio, actividad económica y más.
+          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="feature-card">
+              <div className="text-2xl mb-2">📤</div>
+              <h3 className="text-sm font-semibold text-blue-200 mb-1">1. Sube tu archivo</h3>
+              <p className="text-xs text-slate-400">
+                Carga un archivo Excel (.xlsx) con los NITs en la primera columna. Sin encabezados, solo los números.
+              </p>
+            </div>
+            <div className="feature-card">
+              <div className="text-2xl mb-2">🔍</div>
+              <h3 className="text-sm font-semibold text-blue-200 mb-1">2. Consulta automática</h3>
+              <p className="text-xs text-slate-400">
+                La aplicación consulta el RUES para cada NIT de forma concurrente y muestra el progreso en tiempo real.
+              </p>
+            </div>
+            <div className="feature-card">
+              <div className="text-2xl mb-2">📊</div>
+              <h3 className="text-sm font-semibold text-blue-200 mb-1">3. Descarga resultados</h3>
+              <p className="text-xs text-slate-400">
+                Visualiza los resultados en una tabla y descárgalos en un nuevo archivo Excel listo para usar.
+              </p>
+            </div>
+          </div>
         </section>
 
         {/* ── Results Table ── */}
