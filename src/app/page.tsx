@@ -151,132 +151,246 @@ export default function Page() {
   }, [results]);
 
   return (
-    <div className="min-h-screen bg-[#0e1117] text-white flex flex-col items-center px-4 py-10">
-      <div className="w-full max-w-5xl">
-        <h1 className="text-3xl font-bold text-blue-400 mb-2">
-          ⚙️ Automatizador de Consulta RUES
-        </h1>
-        <p className="text-zinc-400 text-sm mb-8">
-          Sube un archivo Excel (.xlsx) con los NITs en la primera columna.
-          La aplicación consultará el RUES para cada NIT y mostrará los
-          resultados. Podrás descargar los resultados en un nuevo archivo Excel.
-        </p>
+    <div className="min-h-screen flex flex-col items-center px-4 py-12 sm:py-16">
+      <div className="w-full max-w-5xl space-y-8">
 
-        <div
-          onDrop={handleDrop}
-          onDragOver={handleDragOver}
-          onClick={() => fileInputRef.current?.click()}
-          className="border-2 border-dashed border-zinc-600 rounded-lg p-8 text-center hover:border-blue-500 transition cursor-pointer"
-        >
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept=".xlsx"
-            onChange={handleFileChange}
-            className="hidden"
-          />
-          {file ? (
-            <p className="text-blue-400 font-medium">
-              📄 {file.name}{" "}
-              <span className="text-zinc-400">
-                ({nits.length} NITs encontrados)
-              </span>
-            </p>
-          ) : (
-            <p className="text-zinc-400">
-              Arrastra y suelta un archivo .xlsx aquí o haz clic para
-              seleccionar
-            </p>
-          )}
-        </div>
+        {/* ── Header ── */}
+        <header className="text-center space-y-3">
+          <div className="inline-flex items-center gap-2 badge badge-blue mb-2">
+            <span>⚡</span> Herramienta de Automatización
+          </div>
+          <h1 className="text-4xl sm:text-5xl font-bold tracking-tight bg-gradient-to-r from-blue-400 via-blue-300 to-indigo-400 bg-clip-text text-transparent">
+            Automatizador RUES
+          </h1>
+          <p className="text-slate-400 text-base max-w-2xl mx-auto leading-relaxed">
+            Consulta masiva de información empresarial en el Registro Único Empresarial y Social de Colombia.
+          </p>
+        </header>
 
-        <div className="flex gap-4 mt-6">
-          <button
-            onClick={handleProcess}
-            disabled={nits.length === 0 || processing}
-            className="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-lg transition disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            {processing ? "Procesando..." : "Ejecutar proceso"}
-          </button>
-          {results.length > 0 && !processing && (
-            <button
-              onClick={handleDownload}
-              className="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-lg transition"
-            >
-              Descargar Resultados
-            </button>
-          )}
-        </div>
+        {/* ── Info Section ── */}
+        <section className="glass p-8 space-y-6">
+          <h2 className="text-lg font-semibold text-blue-300 flex items-center gap-2">
+            <span className="text-xl">📋</span> ¿Qué hace esta aplicación?
+          </h2>
+          <p className="text-slate-300 text-sm leading-relaxed">
+            Esta herramienta permite automatizar la consulta de información empresarial en el
+            <strong className="text-blue-300"> RUES (Registro Único Empresarial y Social)</strong> de Colombia.
+            Solo necesitas subir un archivo Excel con los NITs de las empresas que deseas consultar y la
+            aplicación se encargará de buscar automáticamente cada NIT, recopilando datos como el nombre
+            de la empresa, estado de la matrícula, cámara de comercio, actividad económica y más.
+          </p>
 
-        {(processing || progress.done > 0) && (
-          <div className="mt-6">
-            <p className="text-zinc-300 text-sm mb-1">
-              Procesando {progress.done}/{progress.total}...
-            </p>
-            <div className="w-full bg-zinc-800 rounded-full h-3 mt-4">
-              <div
-                className="bg-blue-500 h-3 rounded-full transition-all"
-                style={{
-                  width:
-                    progress.total > 0
-                      ? `${(progress.done / progress.total) * 100}%`
-                      : "0%",
-                }}
-              />
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="feature-card">
+              <div className="text-2xl mb-2">📤</div>
+              <h3 className="text-sm font-semibold text-blue-200 mb-1">1. Sube tu archivo</h3>
+              <p className="text-xs text-slate-400">
+                Carga un archivo Excel (.xlsx) con los NITs en la primera columna. Sin encabezados, solo los números.
+              </p>
+            </div>
+            <div className="feature-card">
+              <div className="text-2xl mb-2">🔍</div>
+              <h3 className="text-sm font-semibold text-blue-200 mb-1">2. Consulta automática</h3>
+              <p className="text-xs text-slate-400">
+                La aplicación consulta el RUES para cada NIT de forma concurrente y muestra el progreso en tiempo real.
+              </p>
+            </div>
+            <div className="feature-card">
+              <div className="text-2xl mb-2">📊</div>
+              <h3 className="text-sm font-semibold text-blue-200 mb-1">3. Descarga resultados</h3>
+              <p className="text-xs text-slate-400">
+                Visualiza los resultados en una tabla y descárgalos en un nuevo archivo Excel listo para usar.
+              </p>
             </div>
           </div>
-        )}
+        </section>
 
-        {results.length > 0 && (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm text-left mt-6">
-              <thead>
-                <tr className="bg-zinc-800/80 text-zinc-300">
-                  <th className="px-3 py-2">NIT</th>
-                  <th className="px-3 py-2">Nombre Empresa</th>
-                  <th className="px-3 py-2">Categoría de la Matrícula</th>
-                  <th className="px-3 py-2">Cámara de Comercio</th>
-                  <th className="px-3 py-2">Estado de la Matrícula</th>
-                  <th className="px-3 py-2">Último Año Renovado</th>
-                  <th className="px-3 py-2">Actividad Económica</th>
-                </tr>
-              </thead>
-              <tbody>
-                {results.map((row, i) => (
-                  <tr
-                    key={i}
-                    className="border-b border-zinc-800 hover:bg-zinc-800/40"
-                  >
-                    <td className="px-3 py-2">{row.nit}</td>
-                    <td className="px-3 py-2">
-                      {row.error ? (
-                        <span className="text-red-400">{row.error}</span>
-                      ) : (
-                        row.nombre_empresa
-                      )}
-                    </td>
-                    <td className="px-3 py-2">{row.categoria_matricula}</td>
-                    <td className="px-3 py-2">{row.camara_comercio}</td>
-                    <td className="px-3 py-2">{row.estado_matricula}</td>
-                    <td className="px-3 py-2">{row.ultimo_ano_renovado}</td>
-                    <td className="px-3 py-2">{row.actividad_economica}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        {/* ── Ejemplo de archivo ── */}
+        <section className="glass p-8 space-y-4">
+          <h2 className="text-lg font-semibold text-blue-300 flex items-center gap-2">
+            <span className="text-xl">🖼️</span> Formato del archivo de entrada
+          </h2>
+          <p className="text-slate-400 text-sm">
+            Tu archivo Excel debe verse así: una sola columna con los NITs de las empresas (sin encabezados, sin puntos, sin guiones).
+          </p>
+          {/* ──────────────────────────────────────────────────────────
+              ESPACIO PARA IMAGEN DE EJEMPLO
+              Coloca tu imagen en /public/ejemplo-archivo.png y descomenta la línea <img>
+              ────────────────────────────────────────────────────────── */}
+          <div className="image-placeholder">
+            {/* <img src="/ejemplo-archivo.png" alt="Ejemplo de archivo Excel" className="rounded-xl max-h-64 object-contain" /> */}
+            <div className="text-center space-y-2 p-6">
+              <div className="text-4xl opacity-40">🖼️</div>
+              <p className="text-slate-500 text-sm">Coloca aquí tu imagen de ejemplo</p>
+              <p className="text-slate-600 text-xs">
+                Guarda la imagen en <code className="text-blue-400/70 bg-blue-400/5 px-1.5 py-0.5 rounded">public/ejemplo-archivo.png</code> y descomenta la etiqueta img en el código
+              </p>
+            </div>
           </div>
+        </section>
+
+        {/* ── Upload / Drop Zone ── */}
+        <section className="glass p-8 space-y-6">
+          <h2 className="text-lg font-semibold text-blue-300 flex items-center gap-2">
+            <span className="text-xl">🚀</span> Comenzar consulta
+          </h2>
+
+          <div
+            onDrop={handleDrop}
+            onDragOver={handleDragOver}
+            onClick={() => fileInputRef.current?.click()}
+            className="dropzone p-10 text-center"
+          >
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".xlsx"
+              onChange={handleFileChange}
+              className="hidden"
+            />
+            {file ? (
+              <div className="space-y-1">
+                <p className="text-blue-300 font-medium text-lg">📄 {file.name}</p>
+                <p className="text-slate-400 text-sm">
+                  {nits.length} NITs encontrados y listos para procesar
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <div className="text-4xl opacity-50">📂</div>
+                <p className="text-slate-400 text-sm">
+                  Arrastra y suelta un archivo <strong className="text-slate-300">.xlsx</strong> aquí
+                </p>
+                <p className="text-slate-500 text-xs">o haz clic para seleccionar</p>
+              </div>
+            )}
+          </div>
+
+          <div className="flex flex-wrap gap-3">
+            <button
+              onClick={handleProcess}
+              disabled={nits.length === 0 || processing}
+              className="btn-glass px-7 py-3 text-sm"
+            >
+              {processing ? (
+                <span className="flex items-center gap-2">
+                  <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                  </svg>
+                  Procesando...
+                </span>
+              ) : (
+                "⚡ Ejecutar proceso"
+              )}
+            </button>
+            {results.length > 0 && !processing && (
+              <button onClick={handleDownload} className="btn-glass px-7 py-3 text-sm">
+                📥 Descargar Resultados
+              </button>
+            )}
+          </div>
+
+          {/* Progress */}
+          {(processing || progress.done > 0) && (
+            <div className="space-y-2">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-slate-400">
+                  Procesando NITs...
+                </span>
+                <span className="text-blue-300 font-mono text-xs">
+                  {progress.done}/{progress.total}
+                </span>
+              </div>
+              <div className="progress-track h-2">
+                <div
+                  className="progress-fill h-2"
+                  style={{
+                    width:
+                      progress.total > 0
+                        ? `${(progress.done / progress.total) * 100}%`
+                        : "0%",
+                  }}
+                />
+              </div>
+            </div>
+          )}
+        </section>
+
+        {/* ── Results Table ── */}
+        {results.length > 0 && (
+          <section className="glass p-6 overflow-hidden">
+            <h2 className="text-lg font-semibold text-blue-300 mb-4 flex items-center gap-2">
+              <span className="text-xl">📊</span> Resultados
+              <span className="badge badge-blue ml-2">{results.length} registros</span>
+            </h2>
+            <div className="overflow-x-auto rounded-xl glass-sm">
+              <table className="glass-table">
+                <thead>
+                  <tr>
+                    <th className="text-left">NIT</th>
+                    <th className="text-left">Nombre Empresa</th>
+                    <th className="text-left">Categoría Matrícula</th>
+                    <th className="text-left">Cámara de Comercio</th>
+                    <th className="text-left">Estado Matrícula</th>
+                    <th className="text-left">Último Año Renovado</th>
+                    <th className="text-left">Actividad Económica</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {results.map((row, i) => (
+                    <tr key={i}>
+                      <td className="font-mono text-blue-200/80">{row.nit}</td>
+                      <td>
+                        {row.error ? (
+                          <span className="text-red-400 text-xs font-medium">{row.error}</span>
+                        ) : (
+                          row.nombre_empresa
+                        )}
+                      </td>
+                      <td>{row.categoria_matricula}</td>
+                      <td>{row.camara_comercio}</td>
+                      <td>
+                        <span
+                          className={`badge text-xs ${
+                            row.estado_matricula?.toLowerCase().includes("activa")
+                              ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/20"
+                              : row.estado_matricula?.toLowerCase().includes("cancel")
+                              ? "bg-red-500/15 text-red-400 border border-red-500/20"
+                              : "badge-blue"
+                          }`}
+                        >
+                          {row.estado_matricula || "—"}
+                        </span>
+                      </td>
+                      <td>{row.ultimo_ano_renovado}</td>
+                      <td className="max-w-[200px] truncate" title={row.actividad_economica}>
+                        {row.actividad_economica}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
         )}
 
-        <footer className="mt-12 text-center text-zinc-500 text-xs">
-          Creado por{" "}
-          <a
-            href="https://github.com/NotExer"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-400 hover:underline"
-          >
-            NotExer
-          </a>
+        {/* ── Footer ── */}
+        <footer className="text-center py-6 space-y-1">
+          <p className="text-slate-600 text-xs">
+            Automatizador RUES — Consulta empresarial automatizada
+          </p>
+          <p className="text-slate-600 text-xs">
+            Creado por{" "}
+            <a
+              href="https://github.com/NotExer"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-400/60 hover:text-blue-400 transition"
+            >
+              NotExer
+            </a>
+          </p>
         </footer>
       </div>
     </div>
