@@ -1,36 +1,62 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ⚡ Automatizador RUES
 
-## Getting Started
+Herramienta web para la consulta masiva y automatizada de información empresarial en el **RUES (Registro Único Empresarial y Social)** de Colombia.
 
-First, run the development server:
+🔗 **Preview:** [automatizacion-rues.vercel.app](https://automatizacion-rues.vercel.app)
+
+## ¿Cómo funciona?
+
+1. **Sube un archivo Excel (.xlsx)** con los NITs de las empresas en la primera columna (sin encabezados, sin puntos ni guiones).
+2. **La app consulta automáticamente** cada NIT contra la API de [datos.gov.co](https://www.datos.gov.co/) y la API del RUES de forma concurrente.
+3. **Visualiza los resultados** en una tabla y descárgalos como un nuevo archivo Excel.
+
+**Datos obtenidos por cada NIT:**
+- Nombre de la empresa
+- Categoría de la matrícula
+- Cámara de comercio
+- Estado de la matrícula
+- Último año renovado
+- Actividad económica (código CIIU)
+
+## Tecnologías
+
+- [Next.js](https://nextjs.org/) 16 (App Router)
+- [React](https://react.dev/) 19
+- [TypeScript](https://www.typescriptlang.org/)
+- [Tailwind CSS](https://tailwindcss.com/) 4
+- [SheetJS (xlsx)](https://sheetjs.com/) — lectura y escritura de archivos Excel
+- Desplegado en [Vercel](https://vercel.com/)
+
+## Requisitos
+
+- [Node.js](https://nodejs.org/) 18 o superior
+- npm (incluido con Node.js)
+
+## Instalación
 
 ```bash
+# Clonar el repositorio
+git clone https://github.com/notexer/automatizacion-rues.git
+cd automatizacion-rues
+
+# Instalar dependencias
+npm install
+
+# Iniciar en modo desarrollo
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abre [http://localhost:3000](http://localhost:3000) en tu navegador.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Scripts disponibles
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Comando         | Descripción                        |
+| --------------- | ---------------------------------- |
+| `npm run dev`   | Inicia el servidor de desarrollo   |
+| `npm run build` | Genera la build de producción      |
+| `npm run start` | Inicia el servidor de producción   |
+| `npm run lint`  | Ejecuta ESLint                     |
 
-## Learn More
+## Autor
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Creado por [NotExer](https://github.com/NotExer)
