@@ -1,8 +1,8 @@
-# ⚡ Automatizador RUES
+# Automatizador RUES
 
 Herramienta web para la consulta masiva y automatizada de información empresarial en el **RUES (Registro Único Empresarial y Social)** de Colombia.
 
-🔗 **Preview:** [automatizacion-rues.vercel.app](https://automatizacion-rues.vercel.app)
+**Preview:** [automatizacion-rues.vercel.app](https://automatizacion-rues.vercel.app)
 
 ## ¿Cómo funciona?
 
