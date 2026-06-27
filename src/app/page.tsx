@@ -2,6 +2,23 @@
 
 import { useState, useCallback, useRef } from "react";
 import * as XLSX from "xlsx";
+import {
+  UploadCloud,
+  FileSpreadsheet,
+  Play,
+  Download,
+  Info,
+  CheckCircle2,
+  AlertCircle,
+  Loader2,
+  Building2,
+  Sparkles,
+  Trash2,
+  HelpCircle,
+  FileText,
+  Search,
+  Check
+} from "lucide-react";
 
 interface ResultRow {
   nit: string;
@@ -34,6 +51,7 @@ export default function Page() {
   const [nits, setNits] = useState<string[]>([]);
   const [results, setResults] = useState<ResultRow[]>([]);
   const [processing, setProcessing] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   const [progress, setProgress] = useState<{ done: number; total: number }>({
     done: 0,
     total: 0,
@@ -60,20 +78,28 @@ export default function Page() {
     reader.readAsArrayBuffer(f);
   }, []);
 
+  const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+  }, []);
+
+  const handleDragEnter = useCallback((e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(true);
+  }, []);
+
+  const handleDragLeave = useCallback((e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(false);
+  }, []);
+
   const handleDrop = useCallback(
     (e: React.DragEvent<HTMLDivElement>) => {
       e.preventDefault();
+      setIsDragging(false);
       const f = e.dataTransfer.files[0];
       if (f && f.name.endsWith(".xlsx")) parseFile(f);
     },
     [parseFile]
-  );
-
-  const handleDragOver = useCallback(
-    (e: React.DragEvent<HTMLDivElement>) => {
-      e.preventDefault();
-    },
-    []
   );
 
   const handleFileChange = useCallback(
@@ -83,6 +109,17 @@ export default function Page() {
     },
     [parseFile]
   );
+
+  const handleClearFile = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    setFile(null);
+    setNits([]);
+    setResults([]);
+    setProgress({ done: 0, total: 0 });
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  }, []);
 
   const handleProcess = useCallback(async () => {
     if (nits.length === 0) return;
@@ -151,33 +188,39 @@ export default function Page() {
   }, [results]);
 
   return (
-    <div className="min-h-screen flex flex-col items-center px-4 py-12 sm:py-16">
-      <div className="w-full max-w-5xl space-y-8">
+    <div className="min-h-screen flex flex-col items-center px-4 py-12 sm:py-16 bg-[#000000] text-white">
+      <div className="w-full max-w-5xl space-y-8 animate-slide-up">
 
         {/* ── Header ── */}
-        <header className="text-center space-y-3">
-          <div className="inline-flex items-center gap-2 badge badge-blue mb-2">
-            <span>⚡</span> Herramienta de Automatización
+        <header className="text-center space-y-4">
+          <div className="inline-flex items-center gap-1.5 badge badge-blue">
+            <Sparkles className="h-3 w-3 text-[#64afff]" />
+            <span className="font-medium">Herramienta de Automatización</span>
           </div>
-          <h1 className="text-4xl sm:text-5xl font-bold tracking-tight bg-gradient-to-r from-blue-400 via-blue-300 to-indigo-400 bg-clip-text text-transparent">
+          <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight text-white">
             Automatizador RUES
           </h1>
-          <p className="text-slate-400 text-base max-w-2xl mx-auto leading-relaxed">
-            Consulta masiva de información empresarial en el Registro Único Empresarial y Social de Colombia.
+          <p className="text-[#86868b] text-base max-w-2xl mx-auto leading-relaxed font-normal">
+            Consulta masiva de información empresarial en el Registro Único Empresarial y Social de Colombia de forma automatizada y directa.
           </p>
         </header>
 
         {/* ── Upload / Drop Zone ── */}
-        <section className="glass p-8 space-y-6">
-          <h2 className="text-lg font-semibold text-blue-300 flex items-center gap-2">
-            <span className="text-xl">🚀</span> Comenzar consulta
+        <section className="glass p-6 sm:p-8 space-y-6">
+          <h2 className="text-md font-medium text-white flex items-center gap-2">
+            <FileSpreadsheet className="h-4.5 w-4.5 text-[#86868b]" />
+            Comenzar consulta
           </h2>
 
           <div
-            onDrop={handleDrop}
             onDragOver={handleDragOver}
+            onDragEnter={handleDragEnter}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
             onClick={() => fileInputRef.current?.click()}
-            className="dropzone p-10 text-center"
+            className={`dropzone p-8 sm:p-10 text-center transition-all duration-300 ${
+              isDragging ? "dropzone-dragging" : ""
+            }`}
           >
             <input
               ref={fileInputRef}
@@ -187,19 +230,33 @@ export default function Page() {
               className="hidden"
             />
             {file ? (
-              <div className="space-y-1">
-                <p className="text-blue-300 font-medium text-lg">📄 {file.name}</p>
-                <p className="text-slate-400 text-sm">
-                  {nits.length} NITs encontrados y listos para procesar
-                </p>
+              <div className="space-y-3 animate-fade-in flex flex-col items-center justify-center">
+                <FileSpreadsheet className="h-10 w-10 text-[#0071e3]" />
+                <div className="space-y-1">
+                  <p className="text-white font-medium text-base">{file.name}</p>
+                  <p className="text-[#86868b] text-xs">
+                    {nits.length} NITs encontrados y listos para procesar
+                  </p>
+                </div>
+                <button
+                  onClick={handleClearFile}
+                  className="mt-2 inline-flex items-center gap-1.5 text-xs text-[#ff453a] hover:text-[#ff6961] transition bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-lg border border-white/5 active:scale-95"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                  Remover archivo
+                </button>
               </div>
             ) : (
-              <div className="space-y-2">
-                <div className="text-4xl opacity-50">📂</div>
-                <p className="text-slate-400 text-sm">
-                  Arrastra y suelta un archivo <strong className="text-slate-300">.xlsx</strong> aquí
-                </p>
-                <p className="text-slate-500 text-xs">o haz clic para seleccionar</p>
+              <div className="space-y-3 py-4">
+                <div className="flex justify-center">
+                  <UploadCloud className="h-10 w-10 text-[#86868b]" />
+                </div>
+                <div className="space-y-1">
+                  <p className="text-[#e5e5ea] text-sm">
+                    Arrastra y suelta un archivo <strong className="text-white font-medium">.xlsx</strong> aquí
+                  </p>
+                  <p className="text-[#86868b] text-xs">o haz clic para seleccionar desde tu computadora</p>
+                </div>
               </div>
             )}
           </div>
@@ -208,41 +265,55 @@ export default function Page() {
             <button
               onClick={handleProcess}
               disabled={nits.length === 0 || processing}
-              className="btn-glass px-7 py-3 text-sm"
+              className="btn-apple-primary px-6 py-2.5 text-sm inline-flex items-center gap-2"
             >
               {processing ? (
-                <span className="flex items-center gap-2">
-                  <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
-                  </svg>
+                <>
+                  <Loader2 className="animate-spin h-4 w-4" />
                   Procesando...
-                </span>
+                </>
               ) : (
-                "⚡ Ejecutar proceso"
+                <>
+                  <Play className="h-4 w-4" />
+                  Ejecutar proceso
+                </>
               )}
             </button>
             {results.length > 0 && !processing && (
-              <button onClick={handleDownload} className="btn-glass px-7 py-3 text-sm">
-                📥 Descargar Resultados
+              <button
+                onClick={handleDownload}
+                className="btn-apple-secondary px-6 py-2.5 text-sm inline-flex items-center gap-2"
+              >
+                <Download className="h-4 w-4 text-[#86868b]" />
+                Descargar Resultados
               </button>
             )}
           </div>
 
           {/* Progress */}
           {(processing || progress.done > 0) && (
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-slate-400">
-                  Procesando NITs...
-                </span>
-                <span className="text-blue-300 font-mono text-xs">
-                  {progress.done}/{progress.total}
+            <div className="space-y-2.5 animate-fade-in p-4 glass-sm">
+              <div className="flex items-center justify-between text-xs sm:text-sm">
+                <div className="flex items-center gap-2">
+                  {processing ? (
+                    <span className="flex h-2 w-2 relative">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#0071e3] opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-[#0071e3]"></span>
+                    </span>
+                  ) : (
+                    <Check className="h-4 w-4 text-[#30d158]" />
+                  )}
+                  <span className="text-[#86868b]">
+                    {processing ? "Procesando NITs en tiempo real..." : "Proceso completado"}
+                  </span>
+                </div>
+                <span className="text-[#86868b] font-mono text-xs">
+                  {progress.done} / {progress.total} ({Math.round(progress.total > 0 ? (progress.done / progress.total) * 100 : 0)}%)
                 </span>
               </div>
-              <div className="progress-track h-2">
+              <div className="progress-track h-1.5">
                 <div
-                  className="progress-fill h-2"
+                  className="progress-fill h-1.5"
                   style={{
                     width:
                       progress.total > 0
@@ -256,51 +327,55 @@ export default function Page() {
         </section>
 
         {/* ── Ejemplo de archivo ── */}
-        <section className="glass p-8 space-y-4">
-          <h2 className="text-lg font-semibold text-blue-300 flex items-center gap-2">
-            <span className="text-xl">🖼️</span> Formato del archivo de entrada
+        <section className="glass p-6 sm:p-8 space-y-4">
+          <h2 className="text-md font-medium text-white flex items-center gap-2">
+            <FileText className="h-4.5 w-4.5 text-[#86868b]" />
+            Formato del archivo de entrada
           </h2>
-          <p className="text-slate-400 text-sm">
-            Tu archivo Excel debe verse así: una sola columna con los NITs de las empresas (sin encabezados, sin puntos, sin guiones).
+          <p className="text-[#86868b] text-sm leading-relaxed">
+            Tu archivo Excel debe contener una sola columna con los NITs de las empresas que deseas consultar (sin encabezados, sin puntos, sin guiones ni dígitos de verificación).
           </p>
-          <div className="image-placeholder p-4">
-            <img src="/Ejemplo.png" alt="Ejemplo de archivo Excel" className="rounded-xl max-h-80 object-contain" />
+          <div className="border border-white/5 bg-[#1c1c1e]/40 p-4 rounded-xl flex items-center justify-center min-h-[220px]">
+            <img src="/Ejemplo.png" alt="Ejemplo de archivo Excel" className="rounded-lg max-h-72 object-contain opacity-80" />
           </div>
         </section>
 
         {/* ── Info Section ── */}
-        <section className="glass p-8 space-y-6">
-          <h2 className="text-lg font-semibold text-blue-300 flex items-center gap-2">
-            <span className="text-xl">📋</span> ¿Qué hace esta aplicación?
+        <section className="glass p-6 sm:p-8 space-y-6">
+          <h2 className="text-md font-medium text-white flex items-center gap-2">
+            <Info className="h-4.5 w-4.5 text-[#86868b]" />
+            ¿Qué hace esta aplicación?
           </h2>
-          <p className="text-slate-300 text-sm leading-relaxed">
-            Esta herramienta permite automatizar la consulta de información empresarial en el
-            <strong className="text-blue-300"> RUES (Registro Único Empresarial y Social)</strong> de Colombia.
-            Solo necesitas subir un archivo Excel con los NITs de las empresas que deseas consultar y la
-            aplicación se encargará de buscar automáticamente cada NIT, recopilando datos como el nombre
-            de la empresa, estado de la matrícula, cámara de comercio, actividad económica y más.
+          <p className="text-[#86868b] text-sm leading-relaxed font-normal">
+            Esta herramienta automatiza la consulta de información empresarial directamente en el <strong className="text-white font-medium">RUES (Registro Único Empresarial y Social)</strong> de Colombia. Permite ahorrar horas de consulta manual mediante la carga masiva y concurrente.
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="feature-card">
-              <div className="text-2xl mb-2">📤</div>
-              <h3 className="text-sm font-semibold text-blue-200 mb-1">1. Sube tu archivo</h3>
-              <p className="text-xs text-slate-400">
-                Carga un archivo Excel (.xlsx) con los NITs en la primera columna. Sin encabezados, solo los números.
+            <div className="feature-card space-y-3">
+              <div className="p-2 w-fit rounded-lg bg-white/5 border border-white/5">
+                <UploadCloud className="h-5 w-5 text-[#86868b]" />
+              </div>
+              <h3 className="text-sm font-medium text-white">1. Sube tu archivo</h3>
+              <p className="text-xs text-[#86868b] leading-relaxed">
+                Carga el archivo Excel (.xlsx) con la columna de NITs. La app limpiará y normalizará cada registro automáticamente.
               </p>
             </div>
-            <div className="feature-card">
-              <div className="text-2xl mb-2">🔍</div>
-              <h3 className="text-sm font-semibold text-blue-200 mb-1">2. Consulta automática</h3>
-              <p className="text-xs text-slate-400">
-                La aplicación consulta el RUES para cada NIT de forma concurrente y muestra el progreso en tiempo real.
+            <div className="feature-card space-y-3">
+              <div className="p-2 w-fit rounded-lg bg-white/5 border border-white/5">
+                <Search className="h-5 w-5 text-[#86868b]" />
+              </div>
+              <h3 className="text-sm font-medium text-white">2. Consulta concurrente</h3>
+              <p className="text-xs text-[#86868b] leading-relaxed">
+                Consultas paralelas rápidas para obtener el nombre, cámara de comercio, actividad económica y estado actual.
               </p>
             </div>
-            <div className="feature-card">
-              <div className="text-2xl mb-2">📊</div>
-              <h3 className="text-sm font-semibold text-blue-200 mb-1">3. Descarga resultados</h3>
-              <p className="text-xs text-slate-400">
-                Visualiza los resultados en una tabla y descárgalos en un nuevo archivo Excel listo para usar.
+            <div className="feature-card space-y-3">
+              <div className="p-2 w-fit rounded-lg bg-white/5 border border-white/5">
+                <Download className="h-5 w-5 text-[#86868b]" />
+              </div>
+              <h3 className="text-sm font-medium text-white">3. Resultados listos</h3>
+              <p className="text-xs text-[#86868b] leading-relaxed">
+                Visualiza los datos en una tabla limpia y descárgalos directamente en un nuevo archivo Excel listo para reportar.
               </p>
             </div>
           </div>
@@ -308,12 +383,15 @@ export default function Page() {
 
         {/* ── Results Table ── */}
         {results.length > 0 && (
-          <section className="glass p-6 overflow-hidden">
-            <h2 className="text-lg font-semibold text-blue-300 mb-4 flex items-center gap-2">
-              <span className="text-xl">📊</span> Resultados
-              <span className="badge badge-blue ml-2">{results.length} registros</span>
-            </h2>
-            <div className="overflow-x-auto rounded-xl glass-sm">
+          <section className="glass p-5 sm:p-6 overflow-hidden animate-slide-up">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-md font-medium text-white flex items-center gap-2">
+                <Building2 className="h-4.5 w-4.5 text-[#86868b]" />
+                Resultados obtenidos
+              </h2>
+              <span className="badge badge-neutral">{results.length} registros</span>
+            </div>
+            <div className="overflow-x-auto rounded-xl border border-white/5 bg-[#1c1c1e]/20">
               <table className="glass-table">
                 <thead>
                   <tr>
@@ -322,39 +400,46 @@ export default function Page() {
                     <th className="text-left">Categoría Matrícula</th>
                     <th className="text-left">Cámara de Comercio</th>
                     <th className="text-left">Estado Matrícula</th>
-                    <th className="text-left">Último Año Renovado</th>
+                    <th className="text-left">Último Año</th>
                     <th className="text-left">Actividad Económica</th>
                   </tr>
                 </thead>
                 <tbody>
                   {results.map((row, i) => (
-                    <tr key={i}>
-                      <td className="font-mono text-blue-200/80">{row.nit}</td>
+                    <tr key={i} className="animate-fade-in" style={{ animationDelay: `${i * 50}ms` }}>
+                      <td className="font-mono text-[#86868b] font-normal text-xs">{row.nit}</td>
                       <td>
                         {row.error ? (
-                          <span className="text-red-400 text-xs font-medium">{row.error}</span>
+                          <span className="text-[#ff453a] text-xs font-normal inline-flex items-center gap-1">
+                            <AlertCircle className="h-3 w-3 inline" />
+                            {row.error}
+                          </span>
                         ) : (
-                          row.nombre_empresa
+                          <span className="font-medium text-[#e5e5ea]">{row.nombre_empresa}</span>
                         )}
                       </td>
-                      <td>{row.categoria_matricula}</td>
-                      <td>{row.camara_comercio}</td>
+                      <td className="text-xs text-[#86868b]">{row.categoria_matricula || "—"}</td>
+                      <td className="text-xs text-[#86868b]">{row.camara_comercio || "—"}</td>
                       <td>
-                        <span
-                          className={`badge text-xs ${
-                            row.estado_matricula?.toLowerCase().includes("activa")
-                              ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/20"
-                              : row.estado_matricula?.toLowerCase().includes("cancel")
-                              ? "bg-red-500/15 text-red-400 border border-red-500/20"
-                              : "badge-blue"
-                          }`}
-                        >
-                          {row.estado_matricula || "—"}
-                        </span>
+                        {row.estado_matricula ? (
+                          <span
+                            className={`badge text-xs font-normal ${
+                              row.estado_matricula.toLowerCase().includes("activ")
+                                ? "bg-[#30d158]/10 text-[#30d158] border border-[#30d158]/15"
+                                : row.estado_matricula.toLowerCase().includes("cancel") || row.estado_matricula.toLowerCase().includes("inactiv")
+                                ? "bg-[#ff453a]/10 text-[#ff453a] border border-[#ff453a]/15"
+                                : "badge-neutral"
+                            }`}
+                          >
+                            {row.estado_matricula}
+                          </span>
+                        ) : (
+                          <span className="text-[#86868b]">—</span>
+                        )}
                       </td>
-                      <td>{row.ultimo_ano_renovado}</td>
-                      <td className="max-w-[200px] truncate" title={row.actividad_economica}>
-                        {row.actividad_economica}
+                      <td className="font-mono text-xs text-[#86868b]">{row.ultimo_ano_renovado || "—"}</td>
+                      <td className="max-w-[200px] truncate text-xs text-[#86868b]" title={row.actividad_economica}>
+                        {row.actividad_economica || "—"}
                       </td>
                     </tr>
                   ))}
@@ -365,17 +450,17 @@ export default function Page() {
         )}
 
         {/* ── Footer ── */}
-        <footer className="text-center py-6 space-y-1">
-          <p className="text-slate-600 text-xs">
-            Automatizador RUES — Consulta empresarial automatizada
+        <footer className="text-center py-8 space-y-1.5 border-t border-white/5">
+          <p className="text-[#48484a] text-xs font-normal">
+            Automatizador RUES — Sistema de consulta masiva empresarial
           </p>
-          <p className="text-slate-600 text-xs">
+          <p className="text-[#48484a] text-xs font-normal">
             Creado por{" "}
             <a
               href="https://github.com/NotExer"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-blue-400/60 hover:text-blue-400 transition"
+              className="text-[#86868b] hover:text-white transition-colors duration-200"
             >
               NotExer
             </a>
