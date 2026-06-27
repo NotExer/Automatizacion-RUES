@@ -193,10 +193,6 @@ export default function Page() {
 
         {/* ── Header ── */}
         <header className="text-center space-y-4">
-          <div className="inline-flex items-center gap-1.5 badge badge-blue">
-            <Sparkles className="h-3 w-3 text-[#64afff]" />
-            <span className="font-medium">Herramienta de Automatización</span>
-          </div>
           <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight text-white">
             Automatizador RUES
           </h1>
